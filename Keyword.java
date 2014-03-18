@@ -18,11 +18,7 @@ public class Keyword {
 			
 			//create scanner obejct to read file
 			Scanner input = new Scanner(_file);
-		
-			//need to remove all periods first
-			//	String all = input.toString();
-			//System.out.println(input);
-			
+					
 			//keep taking in inputs from the file and count the occurrences
 			while(input.hasNext()){
 				String unfiltered_input = input.next().toLowerCase();

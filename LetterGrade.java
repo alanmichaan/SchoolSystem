@@ -25,7 +25,7 @@ public class LetterGrade extends JFrame {
 	private JTextField grade = new JTextField(); 
 
 	
-	private JTextField jtfTotalPayment = new JTextField(); 
+//	private JTextField jtfTotalPayment = new JTextField(); 
 
 	private JButton computeLoan = new JButton("Calculate Grade"); 
 
@@ -75,16 +75,6 @@ public class LetterGrade extends JFrame {
 				
 				LGrade grd = new LGrade();
 				grade.setText(grd.getMark(avg)); 
-
-				
-				
-				
-				
-				//create a loan object 
-				//Loan loan = new Loan(interest, year, loanAmount); 
-				//display month payment and total payment 
-				//jtfMonthlyPayment.setText(String.format("%.2f", loan.getMonthlyPayment())); 
-				//jtfTotalPayment.setText(String.format("%.2f", loan.getTotalPayment())); 
 			} 
 		}); 
 	} 

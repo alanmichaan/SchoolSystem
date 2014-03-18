@@ -79,8 +79,5 @@ public class Department {
 		this.student_list = _student_list;
 	}
 	
-	public Department(){ //amichaan_lab03_Student [] students,amichaan_lab03_Course [] course
-		//student_list = students;
-		//course_list = course; 
-	}
+	public Department(){}
 }

@@ -60,16 +60,6 @@ public class GUIManager implements ActionListener{
 
 	public static void displayMenu(){
 		
-		/*//display options
-		System.out.println("A. Print List of All Students. ");
-		System.out.println("B. Print List of Courses. ");
-		System.out.println("C. Add a Student to a Course. ");
-		System.out.println("D. Drop a Student From a Course. ");
-		System.out.println("E. Print a List of Students in a Course. ");
-		System.out.println("F. Exit. " + "\n");
-		System.out.println("Please Enter Your Choice: ");
-		*/
-		//JFrame frame = new JFrame("Course Manager");
 		main_frame.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));
 
 		main_frame.setSize(600, 400);
@@ -326,9 +316,6 @@ public class GUIManager implements ActionListener{
 				JOptionPane.showMessageDialog(null, "Illegal Argument", "ERROR", JOptionPane.INFORMATION_MESSAGE);
 			}
 		}//end while
-
-		
-
 	}
 	
 	//case d
@@ -385,9 +372,6 @@ public class GUIManager implements ActionListener{
 				String str_id = JOptionPane.showInputDialog(null, "Enter the ID number of the student you would like to remove: ", "Remove a Student", JOptionPane.QUESTION_MESSAGE).toUpperCase();
 				int int_id = Integer.parseInt(str_id);
 				
-				//correct_input = false;
-				//check if the course is empty
-
 				//find the student by matching the ID
 				java.util.Iterator<Student> iter = student_list.iterator();		
 				while(iter.hasNext()){
@@ -459,16 +443,7 @@ public class GUIManager implements ActionListener{
 		//Add the current student to the lists of students in a course (if he/she is not on there already
 		if(!students_in_courses.contains(student_added)){
 			students_in_courses.add(student_added);
-		}
-		
-
-		
-		
-		
-		
-		
-		
-		
+		}		
 	}
 
 	
@@ -508,13 +483,6 @@ public class GUIManager implements ActionListener{
 			}
 		}
 		
-		/*//check if the course is empty
-		if (current_course.list_students.size() == 0){
-			System.out.println("Course is empty!\n\n");
-			correct_input = false;
-		}*/
-		//if (!correct_input) break;
-
 		correct_input = false;
 		int screen_file = 0;
 		while(!correct_input){
@@ -530,7 +498,6 @@ public class GUIManager implements ActionListener{
 					course_display_frame.setSize(400, 300);
 					course_display_frame.setLocation(400, 100);
 					course_display_frame.setVisible(true);
-					//course_display_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 					course_display_frame.add(new JLabel("Class List for " + current_course.getName()));
 					course_display_frame.add(new JLabel("Number of students in the course = " + current_course.list_students.size()));
@@ -562,7 +529,6 @@ public class GUIManager implements ActionListener{
 					out.write("Student		Name ID\n");
 					out.newLine();
 					
-					
 					java.util.Iterator<Student> iter = current_course.list_students.iterator();		
 					while(iter.hasNext()){
 
@@ -570,7 +536,6 @@ public class GUIManager implements ActionListener{
 						Student tmp_student = iter.next();
 						out.write(tmp_student.getName() + "		" + tmp_student.getId());
 						out.newLine();
-
 					}
 				}
 				else{
@@ -582,9 +547,7 @@ public class GUIManager implements ActionListener{
 				System.out.println("InputMismatchException.");
 				System.out.println("You must enter 1 OR 2. \n");
 				JOptionPane.showMessageDialog(null, "Must enter 1 or 2", "ERROR", JOptionPane.OK_OPTION);		
-			}//catch(IllegalArgumentException ex){
-			//JOptionPane.showMessageDialog(null, "Illegal Argument", "ERROR", JOptionPane.OK_OPTION);
-			//}
+			}
 		}
 
 	}
@@ -772,7 +735,6 @@ public class GUIManager implements ActionListener{
 	
 	public static void caseJ(){
 
-		
 		JFrame keyword_frame = new JFrame("Keyword");
 		keyword_frame.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));
 		keyword_frame.setLocation(400, 100);
@@ -786,7 +748,6 @@ public class GUIManager implements ActionListener{
 		for(Object p: x){
 			keyword_frame.add(new JLabel(p.toString() + ": " + map.get(p)));
 		}
-		
 	}
 
 	public static void caseK(){
@@ -853,25 +814,14 @@ public class GUIManager implements ActionListener{
 			System.out.println("The " + e.getActionCommand());
 			caseK();
 		}
-		//else if (match_string.equals(course_display_ok.getName())){
-			//System.out.println("The " + e.getActionCommand());
-			//course_display_frame.;
-			//main_frame.toFront();
-
-		//}
 		else System.out.println("you hit the else statement you should check out wahts wrong!");
 	}
 	
 	
 	public static void main(String[] args) throws StudentNotFoundException, CourseNotFoundException, IOException{
 		
-		//amichaan_lab03_Course[] course_list = new amichaan_lab03_Course[12]; 
-		//amichaan_lab03_Department d1 = new amichaan_lab03_Department();
 		course_list = d1.initCourses();
 		d1.setCourseArray(course_list);
-		
-		
-		//amichaan_lab03_Student[] student_list = new amichaan_lab03_Student[15]; 
 		student_list = d1.initStudents();
 		d1.setStudentArray(student_list);
 		displayMenu();
