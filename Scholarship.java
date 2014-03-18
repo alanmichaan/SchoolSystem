@@ -1,4 +1,4 @@
-package amichaan_lab03;
+package studentsystem;
 
 import java.util.Vector;
 

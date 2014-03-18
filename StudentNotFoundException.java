@@ -1,4 +1,4 @@
-package amichaan_lab03;
+package studentsystem;
 
 public class StudentNotFoundException extends Exception{
 	public StudentNotFoundException(String ex){

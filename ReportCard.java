@@ -1,4 +1,4 @@
-package amichaan_lab03;
+package studentsystem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +24,7 @@ public class ReportCard {
 		//iterate through the courses
 		/*for(int i = 0; i <total_courses; i++){
 			
-			Student [] current_student_list = course_list[i].list_students;
+			amichaan_lab03_Student [] current_student_list = course_list[i].list_students;
 			int total_students = 0;
 			
 			//count how many students in that particular course

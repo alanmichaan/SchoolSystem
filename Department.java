@@ -1,4 +1,4 @@
-package amichaan_lab03;
+package studentsystem;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,26 +11,28 @@ import java.util.Scanner;
 
 public class Department {
 	public Queue<Student> student_list = new LinkedList<Student>();
-	//public Student [] student_list = new Student [15];
-	public Course [] course_list = new Course [12];
+	//public amichaan_lab03_Student [] student_list = new amichaan_lab03_Student [15];
+	
+	public Queue<Course> course_list = new LinkedList<Course>();
+	//public Course [] course_list = new Course [12];
 
 	
-	public Course[] initCourses(){
+	public Queue<Course> initCourses(){
 		
 		//create a new file object
 		File _file = new File("C:\\Users\\iris\\workspace\\amichaan_lab03\\Courses.txt");
 		
 		//create a course list which will be returned
-		Course [] course_list1 = new Course[12];
+		Queue<Course> course_list2 = new LinkedList<Course>();
 		try{
 			
-			//create scanner obejct to read file
+			//create scanner object to read file
 			Scanner input = new Scanner(_file);
 			int i = 0;
 			
 			//add courses to the course list and set the name (read from file)
 			while(input.hasNext()){
-				course_list1[i] = new Course(input.next());
+				course_list2.add(new Course(input.next()));
 				i++;
 			}
 			input.close();
@@ -38,48 +40,46 @@ public class Department {
 		catch(FileNotFoundException ex){
 			System.out.println("FileNotFoundException");
 		}
-		return course_list1;
+		return course_list2;
 	}
 	
 	
-	public Student[] initStudents(){
+	public Queue<Student> initStudents(){
 		//create a new file object
 		File _file = new File("C:\\Users\\iris\\workspace\\amichaan_lab03\\Students.txt");
 
 		//create a course list which will be returned
-		Student [] student_list1 = new Student[15];
+		Queue<Student> student_list2 = new LinkedList<Student>();
 		try{
 
-			//create scanner obejct to read file
+			//create scanner object to read file
 			Scanner input = new Scanner(_file);
-			int i = 0;
 
 			//add courses to the course list and set the name (read from file)
 			while(input.hasNext()){
 				String name = input.next();
 				int ID = input.nextInt();
-				student_list1[i] = new Student(name, ID);
-				i++;
+				student_list2.add(new Student(name, ID));
 			}
 			input.close();
 		}
 		catch(FileNotFoundException ex){
 			System.out.println("FileNotFoundException");
 		}
-		return student_list1;
+		return student_list2;
 	}
 
 	
 	
-	//public void setCourseArray( Course [] array){
-		//this.course_list = array;
-	//}
+	public void setCourseArray(Queue<Course> _course_list){
+		this.course_list = _course_list;
+	}
 	
-	//public void setStudentArray( Student [] array){
-		//this.student_list = array;
-	//}
+	public void setStudentArray( Queue<Student> _student_list){
+		this.student_list = _student_list;
+	}
 	
-	public Department(){ //amichaan_lab03_Student [] students,Course [] course
+	public Department(){ //amichaan_lab03_Student [] students,amichaan_lab03_Course [] course
 		//student_list = students;
 		//course_list = course; 
 	}

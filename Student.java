@@ -1,16 +1,16 @@
-package amichaan_lab03;
+package studentsystem;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Vector;
 
-public class Student {
+public class Student implements Comparable<Student>{
 	public String m_name;
 	public int m_id;
 	public Vector<Course> courses;
 	public Vector<Integer[]> grades; 
-	public double average;
+	public double average = 0;
 
 	//constructor that takes two parameters
 	Student(String name, int id) {
@@ -79,5 +79,21 @@ public class Student {
 	public void setId(int m_id) {
 		this.m_id = m_id;
 	}
+
+	@Override
+	//1 thing passing in is smaller
+	//0 = equal
+	//-1 = thing passing in is bigger
+	public int compareTo(Student student2) {
+		// TODO Auto-generated method stub
+		if(this.getAverage()> student2.getAverage()){
+			return -1;
+		}
+		else if (this.getAverage() == student2.getAverage()){
+			return 0;
+		}
+		else return 1;
+	}
+
 	
 }

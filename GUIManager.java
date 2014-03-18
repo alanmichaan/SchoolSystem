@@ -1,4 +1,4 @@
-package amichaan_lab03;
+package studentsystem;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
@@ -42,12 +42,18 @@ public class GUIManager implements ActionListener{
 	static Button h_option = new Button ("Generate Report Card");
 	static Button i_option = new Button ("Show waiting list");
 	static Button j_option = new Button ("Validate Files");
+	static Button k_option = new Button ("Shuffle");
+	static Button l_option = new Button ("Calculate Letter Grade");
+
+
 	
 	static Button ok = new Button("OK");
 	
-	static Course[] course_list = new Course[12]; 
 	static Department d1 = new Department();
-	static Student[] student_list = new Student[15]; 
+	static Queue<Student> student_list = new LinkedList<Student>();
+	static Queue<Course> course_list = new LinkedList<Course>();
+	
+	
 	static JFrame main_frame = new JFrame("Course Manager");
 	static Vector<Student> students_in_courses = new Vector<Student>(); 
 
@@ -66,7 +72,7 @@ public class GUIManager implements ActionListener{
 		//JFrame frame = new JFrame("Course Manager");
 		main_frame.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));
 
-		main_frame.setSize(500, 500);
+		main_frame.setSize(600, 400);
 		main_frame.setLocation(400, 100);
 		main_frame.setVisible(true);
 		main_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
@@ -81,6 +87,8 @@ public class GUIManager implements ActionListener{
 		main_frame.add(h_option);
 		main_frame.add(i_option);
 		main_frame.add(j_option);
+		main_frame.add(k_option);
+		main_frame.add(l_option);
 		main_frame.add(f_option);
 		
 		
@@ -94,7 +102,10 @@ public class GUIManager implements ActionListener{
 		h_option.setName("Generate Report Card");
 		i_option.setName("Show waiting list");
 		j_option.setName("Validate Files");
-		
+		k_option.setName("Shuffle");
+		l_option.setName("Calculate Letter Grade");
+
+
 		GUIManager listener = new GUIManager();
 		a_option.addActionListener(listener);
 		b_option.addActionListener(listener);
@@ -106,6 +117,9 @@ public class GUIManager implements ActionListener{
 		h_option.addActionListener(listener);
 		i_option.addActionListener(listener);
 		j_option.addActionListener(listener);
+		k_option.addActionListener(listener);
+		l_option.addActionListener(listener);
+
 		
 		ok.setName("OK");
 		ok.addActionListener(listener);
@@ -123,8 +137,16 @@ public class GUIManager implements ActionListener{
 		frame.setVisible(true);
 		
 		frame.add(new Label("Student Name:          ID:"));
-		for(int i = 0; i<15; i++){
-			frame.add(new JLabel(student_list[i].getName() + "          " + student_list[i].getId()));
+		
+		
+		java.util.Iterator<Student> iter = student_list.iterator();		
+		
+		//while there are no more students in courses
+		while(iter.hasNext()){
+			
+			//grab the first student
+			Student current_student = iter.next();
+			frame.add(new JLabel(current_student.getName() + "          " + current_student.getId()));
 		}
 		
 		//frame.add(ok);
@@ -142,39 +164,44 @@ public class GUIManager implements ActionListener{
 		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		frame.add(new JLabel("Course Name: "));
-		for(int i = 0; i<12; i++){
-			frame.add(new JLabel(course_list[i].getName()));
+		
+		java.util.Iterator<Course> iter = course_list.iterator();		
+		while(iter.hasNext()){
 			
+			//grab the first student
+			Course current_course = iter.next();
+			frame.add(new JLabel(current_course.getName()));
 		}
+		
 		//frame.add(ok);
 	}
 	
 	//case c
 	public static void caseC(){
 		boolean correct_input = false;
-		int course_index = 0;
 		Course current_course = null;
 		while(!correct_input){
 			try{
 				String course_name = JOptionPane.showInputDialog(null, "Enter the course name: ", "Add a Student", JOptionPane.INFORMATION_MESSAGE).toUpperCase();
 				//check to see if the course exists
-				for(int i = 0; i< course_list.length; i++){
-					if (course_name.equals(course_list[i].getName())){
-						//System.out.println("course exists");
+				
+				java.util.Iterator<Course> iter = course_list.iterator();		
+				while(iter.hasNext()){
+					
+					//grab the first course
+					current_course = iter.next();
+					if(course_name.equals(current_course.getName())){
 						correct_input = true;
-						course_index = i;
-						current_course = course_list[i];
 						break;
 					}
 					else{
 						correct_input = false;
 					}
 				}
-				//if the input is not valid go back to the main menu
+				
 				if(!correct_input){
 					throw new CourseNotFoundException("CourseNotFoundException.");
 				}
-
 			}
 			catch(CourseNotFoundException ex){
 				JOptionPane.showMessageDialog(null, "Course not found", "ERROR", JOptionPane.INFORMATION_MESSAGE);
@@ -190,33 +217,35 @@ public class GUIManager implements ActionListener{
 		boolean course_full = false;
 		Student current_student = null;
 		while(!correct_input){
-			if (current_course.isFull()){
+			if (current_course.list_students.size() > 2){
 				course_full = true;
 				try{
 					String id = JOptionPane.showInputDialog(null, "Course is full, but enter the ID number of the student \n you would like to add to the waiting list: ", "Enter ID", JOptionPane.QUESTION_MESSAGE);
 					int int_id = Integer.parseInt(id);
-					//find the student by matching the ID
-					for (int i = 0; i< student_list.length; i++){
-						if (student_list[i].getId() == int_id){
-							current_student = student_list[i];
+					
+					
+					java.util.Iterator<Student> iter = student_list.iterator();		
+					while(iter.hasNext()){
+						
+						//grab the first course
+						current_student = iter.next();
+						if(int_id == current_student.getId()){
 							correct_input = true;
 							break;
 						}
-						else{
-							correct_input = false;
-						}
+						else correct_input = false;
 					}
-				
-					if (!correct_input){
+									
+					if (!correct_input) 
 						throw new StudentNotFoundException("StudentNotFoundException.");
-					}
+					
 					
 					current_course.waiting_list.add(current_student);
 					JOptionPane.showMessageDialog(null, "Student added the waiting list", "Waiting list", JOptionPane.INFORMATION_MESSAGE);
 
 				}
 				catch(StudentNotFoundException ex){
-					
+					JOptionPane.showMessageDialog(null, "Student not found", "ERROR", JOptionPane.OK_OPTION);
 				}
 				catch(InputMismatchException ex){
 					JOptionPane.showMessageDialog(null, "Illegal Argument", "ERROR", JOptionPane.OK_OPTION);
@@ -224,90 +253,87 @@ public class GUIManager implements ActionListener{
 			}else correct_input = true;		
 		}//end while
 		
-			//input the student ID
-			int student_index= 0;
-			if (!course_full){
-				correct_input = false;		
-			}
-			else correct_input = true;		
+		//input the student ID
+		if (!course_full){
+			correct_input = false;		
+		}
+		else correct_input = true;		
 
-			boolean third_loop = false;
-			int upper_bound = 0;
-			while(!correct_input){
-				try{
-					String id = JOptionPane.showInputDialog(null, "Enter the ID number of the student you would like to add: ", "Enter ID", JOptionPane.QUESTION_MESSAGE);
-					int int_id = Integer.parseInt(id);
-					//find the student by matching the ID
-					for (int i = 0; i< student_list.length; i++){
-						if (student_list[i].getId() == int_id){
-							student_index = i;
-							current_student = student_list[i];
-							correct_input = true;
-							break;
-						}
-						else{
-							correct_input = false;
-						}
-					}
-					if (!correct_input){
-						throw new StudentNotFoundException("StudentNotFoundException.");
-					}
-					
-					//find size of student list in the course so can traverse for duplicates
-					for(int i = 0; i<current_course.list_students.length; i++){
-						if (course_list[course_index].list_students[i] != null){
-							upper_bound++;
-						}
-					}
+		
+		boolean third_loop = false;
+		int int_id = 0;
+		while(!correct_input){
+			try{
+				
+				String id = JOptionPane.showInputDialog(null, "Enter the ID number of the student you would like to add: ", "Enter ID", JOptionPane.QUESTION_MESSAGE);
+				int_id = Integer.parseInt(id);
 
-						//do not allow duplicates
+				java.util.Iterator<Student> iter = student_list.iterator();		
+				while(iter.hasNext()){
+
+					//grab the first course
+					current_student = iter.next();
+					if(int_id == current_student.getId()){
 						correct_input = true;
-						for(int i = 0; i<upper_bound; i++){
-							if (student_list[student_index].getName().equals(course_list[course_index].list_students[i].getName())){
-								correct_input = false;
-							}
-						}
-						
-						//jmessage
-						if(!correct_input){
-							JOptionPane.showMessageDialog(null, "Student is already enrolled in the course", "ERROR", JOptionPane.OK_OPTION);
-							third_loop = false;
-						}else third_loop = true;						
+						break;
+					}
+					else correct_input = false;
 				}
-				catch(StudentNotFoundException ex){
-					JOptionPane.showMessageDialog(null, "Student not found", "ERROR", JOptionPane.OK_OPTION);
+				if (!correct_input)
+					throw new StudentNotFoundException("StudentNotFoundException.");
 
-				}catch(InputMismatchException ex){
-					JOptionPane.showMessageDialog(null, "Illegal Argument", "ERROR", JOptionPane.OK_OPTION);
+				//check for duplicates
+				if(current_course.list_students.contains(current_student))
+					correct_input = false;
+
+				//jmessage
+				if(!correct_input){
+					JOptionPane.showMessageDialog(null, "Student is already enrolled in the course", "ERROR", JOptionPane.OK_OPTION);
+					third_loop = false;
 				}
-			}//end while
-			
-			//add the course to the students course array
-			Integer[] array = {1 + (int)(Math.random() * 99), 1 + (int)(Math.random() * 99), 1 + (int)(Math.random() * 99), 1 + (int)(Math.random() * 99)};
-			
-			current_student.grades.add(array);
-			current_student.setAverage();
-			
-			//add the current course to the student's list of courses
-			current_student.courses.add(current_course);
-			
-			//add the current student to the list of students that are in courses (if he/she is not in the course already
-			if(!students_in_courses.contains(current_student)){
-				students_in_courses.add(current_student);
+				else third_loop = true;		
+				
+				//add the current student to the list of students that are in courses (if he/she is not in the course already
+				if(!students_in_courses.contains(current_student)){
+					students_in_courses.add(current_student);
+				}
+				
+				
+				if(third_loop){
+					//add the student to the course
+					current_course.list_students.add(current_student);
+					JOptionPane.showMessageDialog(null, "Student Added!", "Success", JOptionPane.INFORMATION_MESSAGE);
+				}
+				
+				//add the current course to the student's list of courses
+				current_student.courses.add(current_course);
+				
+				//add the course to the students course array
+				Integer[] array = {1 + (int)(Math.random() * 99), 1 + (int)(Math.random() * 99), 1 + (int)(Math.random() * 99), 1 + (int)(Math.random() * 99)};
+
+				current_student.grades.add(array);
+				current_student.setAverage();
+
+
 			}
-			
-			if(third_loop){
-				//add the student to the course
-				course_list[course_index].list_students[course_list[course_index].size()] = student_list[student_index];
-				JOptionPane.showMessageDialog(null, "Student Added!", "Success", JOptionPane.INFORMATION_MESSAGE);
+			catch(StudentNotFoundException ex){
+				JOptionPane.showMessageDialog(null, "Student not found", "ERROR", JOptionPane.OK_OPTION);
+
+			}catch(InputMismatchException ex){
+				JOptionPane.showMessageDialog(null, "Illegal Argument", "ERROR", JOptionPane.OK_OPTION);
 			}
+			catch(NumberFormatException ex){
+				JOptionPane.showMessageDialog(null, "Illegal Argument", "ERROR", JOptionPane.INFORMATION_MESSAGE);
+			}
+		}//end while
+
+		
+
 	}
 	
 	//case d
 	public static void caseD(){
-		int course_index = 0;
 		boolean correct_input = false;
-		int student_index= 0;
 		Course current_course = null;
 		while(!correct_input){
 			try{
@@ -315,25 +341,25 @@ public class GUIManager implements ActionListener{
 				String course_name = JOptionPane.showInputDialog(null, "Enter the course name: ", "Remove a Student", JOptionPane.QUESTION_MESSAGE).toUpperCase();
 
 				//check to see if the course exists
-				for(int i = 0; i< course_list.length; i++){
-					if (course_name.equals(course_list[i].getName())){
-						//System.out.println("course exists");
+				java.util.Iterator<Course> iter = course_list.iterator();		
+				while(iter.hasNext()){
+					
+					//grab the first course
+					current_course = iter.next();
+					if(course_name.equals(current_course.getName())){
 						correct_input = true;
-						current_course = course_list[i];
-						course_index = i;
 						break;
 					}
 					else{
-						correct_input = false;					
+						correct_input = false;
 					}
 				}
-
-				//return to main menu if input is not correct
-				if (!correct_input){
-					throw new CourseNotFoundException("CourseNotFoundException");
+				
+				if(!correct_input){
+					throw new CourseNotFoundException("CourseNotFoundException.");
 				}
 				
-				if (course_list[course_index].size() == 0){
+				if (current_course.list_students.isEmpty()){
 					System.out.println("Course is empty!\n\n");
 					correct_input = false;
 				}
@@ -363,42 +389,38 @@ public class GUIManager implements ActionListener{
 				//check if the course is empty
 
 				//find the student by matching the ID
-				for (int i = 0; i< student_list.length; i++){
-					int idd = student_list[i].getId();
-					if (idd == int_id){
-						student_index = i;
-						current_student = student_list[i];
+				java.util.Iterator<Student> iter = student_list.iterator();		
+				while(iter.hasNext()){
+
+					//grab the first course
+					current_student = iter.next();
+					if(int_id == current_student.getId()){
 						correct_input = true;
 						break;
 					}
-					else{
-						correct_input = false;
-					}
+					else correct_input = false;
 				}
-				if (!correct_input){
-					System.out.println("Student does not exist!\n");
-					throw new StudentNotFoundException("StudentNotFoundException");
-				}
+				if (!correct_input)
+					throw new StudentNotFoundException("StudentNotFoundException.");
+				
 			}
 			catch(StudentNotFoundException ex){
 				System.out.println("Student not found. \n");
 				JOptionPane.showMessageDialog(null, "Student not found", "ERROR", JOptionPane.OK_OPTION);
 			}
-			catch(InputMismatchException ex){
-				JOptionPane.showMessageDialog(null, "Illegal Argument", "ERROR", JOptionPane.OK_OPTION);
-			}
 		}
-		int student_course_index= 0;
 		
 		correct_input = false;
 		while(!correct_input){
 			try{
-				//check if the student is in the course
-				for(int i = 0; i < course_list[course_index].size(); i++){
-					if (course_list[course_index].list_students[i].getId() == student_list[student_index].getId()){
+				
+				java.util.Iterator<Student> iter = current_course.list_students.iterator();		
+				while(iter.hasNext()){
+
+					//grab the first student
+					Student tmp_student = iter.next();
+					if(current_student.getId() == tmp_student.getId()){
 						correct_input = true;
-						student_course_index = i;
-						//System.out.println("student is in the course");
 						break;
 					}
 					else{
@@ -406,79 +428,74 @@ public class GUIManager implements ActionListener{
 						throw new StudentNotFoundException("StudentNotFoundException");
 					}
 				}
-
 			}
 			catch(StudentNotFoundException ex){
 				System.out.println("The student name you entered is invalid. \n");
 				JOptionPane.showMessageDialog(null, "Student not found", "ERROR", JOptionPane.OK_OPTION);
 			}
 		}
+		
+		current_course.list_students.remove(current_student);
 
-			//transfer array
-			int initial_size = course_list[course_index].size();
-			for (int i = student_course_index; i < initial_size-1; i++){
-				course_list[course_index].list_students[i] = course_list[course_index].list_students[i+1];
-			}
-			course_list[course_index].list_students[initial_size-1]= null;
+		//remove student
+		System.out.println("Student removed successfully\n");
+		JOptionPane.showMessageDialog(null, "Student removed successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
 
-			//remove student
-			System.out.println("Student removed successfully\n");
-			JOptionPane.showMessageDialog(null, "Student removed successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
-
-			
-			//count the number of students in the course to find an upper bound on its student list
-			int course_size = 0;
-			for(int i = 0; i<course_list[course_index].list_students.length; i++){
-				if (course_list[course_index].list_students[i] != null){
-					course_size++;
-				}
-			}
-			
-			
-			//add any one on the waiting list
-			if (!current_course.waiting_list.isEmpty()){
-				current_course.list_students[course_size] = current_course.waiting_list.remove();
-			}
-			
-			//Add the current student to the lists of students in a course (if he/she is not on there already
-			if(!students_in_courses.contains(current_student)){
-				students_in_courses.add(current_student);
-			}
-			
-			
-			Integer[] array = {1 + (int)(Math.random() * 99), 1 + (int)(Math.random() * 99),1 + (int)(Math.random() * 99),1 + (int)(Math.random() * 99)};
-			current_student.grades.add(array);
-			current_student.setAverage();
-
-			//add the course to the students course list
-			current_student.courses.add(current_course);
+		Student student_added = null;
+		//add any one is on the waiting list
+		if (!current_course.waiting_list.isEmpty()){
+			student_added = current_course.waiting_list.remove();
+			student_added.courses.add(current_course);
 			JOptionPane.showMessageDialog(null, "Student in waiting list added to the course.", "Success", JOptionPane.INFORMATION_MESSAGE);
+			current_course.list_students.add(student_added);
+			
+			
+			//give the student grades..
+			Integer[] array = {1 + (int)(Math.random() * 99), 1 + (int)(Math.random() * 99),1 + (int)(Math.random() * 99),1 + (int)(Math.random() * 99)};
+			student_added.grades.add(array);
+			student_added.setAverage();
 		}
+
+		//Add the current student to the lists of students in a course (if he/she is not on there already
+		if(!students_in_courses.contains(student_added)){
+			students_in_courses.add(student_added);
+		}
+		
+
+		
+		
+		
+		
+		
+		
+		
+	}
 
 	
 	//case e
 	public static void caseE() throws IOException{
-		
+
 		boolean correct_input = false;
-		int course_index = 0;
+		Course current_course = null;
 		while(!correct_input){
 			try{
 				//enter the course name and validate the input
 				String course_name = JOptionPane.showInputDialog(null, "Enter the course name: ", "View Class", JOptionPane.QUESTION_MESSAGE).toUpperCase();
+
 				//check to see if the course exists
-				
-				
-				
-				for(int i = 0; i< course_list.length; i++){
-					if (course_name.equals(course_list[i].getName())){
+				java.util.Iterator<Course> iter = course_list.iterator();		
+				while(iter.hasNext()){
+
+					//grab the first course
+					current_course = iter.next();
+					if(course_name.equals(current_course.getName())){
 						correct_input = true;
-						course_index = i;
 						break;
 					}
 					else{
 						correct_input = false;
-					}
-				}			
+					}	
+				}
 
 				//return to main menu if input is not correct
 				if (!correct_input){
@@ -490,80 +507,88 @@ public class GUIManager implements ActionListener{
 
 			}
 		}
-			/*//check if the course is empty
-			if (course_list[course_index].size() == 0){
-				System.out.println("Course is empty!\n\n");
-				correct_input = false;
-			}
-			//if (!correct_input) break;
-*/			
+		
+		/*//check if the course is empty
+		if (current_course.list_students.size() == 0){
+			System.out.println("Course is empty!\n\n");
 			correct_input = false;
-			int screen_file = 0;
-			while(!correct_input){
-				try{
-					String the_screen_file = JOptionPane.showInputDialog(null, "ENTER 1 - OUTPUT to SCREEN; ENTER 2 - SAVE to FILE ", "View Class", JOptionPane.QUESTION_MESSAGE).toUpperCase();
-					screen_file = Integer.parseInt(the_screen_file);
+		}*/
+		//if (!correct_input) break;
 
-					if(screen_file == 1){
+		correct_input = false;
+		int screen_file = 0;
+		while(!correct_input){
+			try{
+				String the_screen_file = JOptionPane.showInputDialog(null, "ENTER 1 - OUTPUT to SCREEN; ENTER 2 - SAVE to FILE ", "View Class", JOptionPane.QUESTION_MESSAGE).toUpperCase();
+				screen_file = Integer.parseInt(the_screen_file);
 
-						//create a new frame
-						JFrame course_display_frame = new JFrame("Course List");
-						course_display_frame.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));
-						course_display_frame.setSize(400, 300);
-						course_display_frame.setLocation(400, 100);
-						course_display_frame.setVisible(true);
-						//course_display_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				if(screen_file == 1){
 
-						course_display_frame.add(new JLabel("Class List for " + course_list[course_index].getName()));
-						course_display_frame.add(new JLabel("Number of students in the course = " + course_list[course_index].size()));
-						course_display_frame.add(new JLabel("Student Name,  ID"));
+					//create a new frame
+					JFrame course_display_frame = new JFrame("Course List");
+					course_display_frame.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));
+					course_display_frame.setSize(400, 300);
+					course_display_frame.setLocation(400, 100);
+					course_display_frame.setVisible(true);
+					//course_display_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+					course_display_frame.add(new JLabel("Class List for " + current_course.getName()));
+					course_display_frame.add(new JLabel("Number of students in the course = " + current_course.list_students.size()));
+					course_display_frame.add(new JLabel("Student Name,  ID"));
 
 
-						for(int i = 0; i<course_list[course_index].size(); i++){
-							course_display_frame.add(new JLabel(course_list[course_index].list_students[i].getName() + " " + course_list[course_index].list_students[i].getId()));
-						}
-						//course_display_frame.add(course_display_ok);
-						correct_input = true;
+					java.util.Iterator<Student> iter = current_course.list_students.iterator();		
+					while(iter.hasNext()){
+
+						//grab the first course
+						Student tmp_student = iter.next();
+						course_display_frame.add(new JLabel(tmp_student.getName() + " " + tmp_student.getId()));
+					}
+					
+					correct_input = true;
+
+				}
+				else if (screen_file == 2){
+
+					//write to the text file
+					BufferedWriter out = new BufferedWriter(new FileWriter("C:\\Users\\iris\\workspace\\amichaan_lab03\\" + current_course.getName() + ".txt"));
+					out.write("Class List for " + current_course.getName());
+					out.newLine();
+					out.write("Number of students in the course = " + current_course.list_students.size());
+					out.newLine();
+					out.write("Class List ");
+					out.newLine();
+					out.newLine();
+					out.write("Student		Name ID\n");
+					out.newLine();
+					
+					
+					java.util.Iterator<Student> iter = current_course.list_students.iterator();		
+					while(iter.hasNext()){
+
+						//grab the first course
+						Student tmp_student = iter.next();
+						out.write(tmp_student.getName() + "		" + tmp_student.getId());
+						out.newLine();
 
 					}
-					else if (screen_file == 2){
+				}
+				else{
+					System.out.println("incorrect input");
+					correct_input = false;
 
-						//write to the text file
-						BufferedWriter out = new BufferedWriter(new FileWriter("C:\\Users\\iris\\workspace\\amichaan_lab03\\" + course_list[course_index].getName() + ".txt"));
-						out.write("Class List for " + course_list[course_index].getName());
-						out.newLine();
-						out.write("Number of students in the course = " + course_list[course_index].size());
-						out.newLine();
-						out.write("Class List ");
-						out.newLine();
-						out.newLine();
-						out.write("Student		Name ID\n");
-						out.newLine();
-						for(int i = 0; i < course_list[course_index].size(); i++){
-							out.write(course_list[course_index].list_students[i].getName() + "		" + course_list[course_index].list_students[i].getId());
-							out.newLine();
-						}
-						System.out.println("Saved to file.");
-						out.close();						
-						correct_input = true;
-
-					}
-					else{
-						System.out.println("incorrect input");
-						correct_input = false;
-
-					}
-				}catch(InputMismatchException ex){
-					System.out.println("InputMismatchException.");
-					System.out.println("You must enter 1 OR 2. \n");
-					JOptionPane.showMessageDialog(null, "Must enter 1 or 2", "ERROR", JOptionPane.OK_OPTION);		
-				}//catch(IllegalArgumentException ex){
-					//JOptionPane.showMessageDialog(null, "Illegal Argument", "ERROR", JOptionPane.OK_OPTION);
-				//}
-			}
+				}
+			}catch(InputMismatchException ex){
+				System.out.println("InputMismatchException.");
+				System.out.println("You must enter 1 OR 2. \n");
+				JOptionPane.showMessageDialog(null, "Must enter 1 or 2", "ERROR", JOptionPane.OK_OPTION);		
+			}//catch(IllegalArgumentException ex){
+			//JOptionPane.showMessageDialog(null, "Illegal Argument", "ERROR", JOptionPane.OK_OPTION);
+			//}
+		}
 
 	}
-		
+
 	
 	//case f
 	public static void caseF(){
@@ -692,6 +717,8 @@ public class GUIManager implements ActionListener{
 	//case i
  	public static void casei(){
 
+	
+		
 		boolean correct_input = false;
 		int course_index = 0;
 		Course current_course = null;
@@ -699,12 +726,15 @@ public class GUIManager implements ActionListener{
 			try{
 				String course_name = JOptionPane.showInputDialog(null, "Enter the course name of the waiting that you want to see: ", "Waiting List", JOptionPane.INFORMATION_MESSAGE).toUpperCase();
 				//check to see if the course exists
-				for(int i = 0; i< course_list.length; i++){
-					if (course_name.equals(course_list[i].getName())){
-						//System.out.println("course exists");
+				
+				
+				java.util.Iterator<Course> iter = course_list.iterator();		
+				while(iter.hasNext()){
+					
+					//grab the first course
+					current_course = iter.next();
+					if(course_name.equals(current_course.getName())){
 						correct_input = true;
-						course_index = i;
-						current_course = course_list[i];
 						break;
 					}
 					else{
@@ -741,6 +771,7 @@ public class GUIManager implements ActionListener{
 	}
 	
 	public static void caseJ(){
+
 		
 		JFrame keyword_frame = new JFrame("Keyword");
 		keyword_frame.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));
@@ -758,7 +789,13 @@ public class GUIManager implements ActionListener{
 		
 	}
 
- 	public void actionPerformed(ActionEvent e){
+	public static void caseK(){
+		Shuffle shuf = new Shuffle();	
+		shuf.setList(student_list, course_list);
+		shuf.setVisible(true);
+	}
+ 	
+	public void actionPerformed(ActionEvent e){
 		
 		//string which indicates the button has been pressed
 		String match_string = new String(e.getActionCommand());
@@ -812,6 +849,10 @@ public class GUIManager implements ActionListener{
 			System.out.println("The " + e.getActionCommand());
 			caseJ();
 		}
+		else if(match_string.equals(k_option.getName())){
+			System.out.println("The " + e.getActionCommand());
+			caseK();
+		}
 		//else if (match_string.equals(course_display_ok.getName())){
 			//System.out.println("The " + e.getActionCommand());
 			//course_display_frame.;
@@ -824,14 +865,15 @@ public class GUIManager implements ActionListener{
 	
 	public static void main(String[] args) throws StudentNotFoundException, CourseNotFoundException, IOException{
 		
-		//amichaan_lab03_Course[] course_list = new Course[12]; 
-		//amichaan_lab03_Department d1 = new Department();
+		//amichaan_lab03_Course[] course_list = new amichaan_lab03_Course[12]; 
+		//amichaan_lab03_Department d1 = new amichaan_lab03_Department();
 		course_list = d1.initCourses();
-		//d1.setCourseArray(course_list);
+		d1.setCourseArray(course_list);
 		
-		//amichaan_lab03_Student[] student_list = new Student[15]; 
+		
+		//amichaan_lab03_Student[] student_list = new amichaan_lab03_Student[15]; 
 		student_list = d1.initStudents();
-		//d1.setStudentArray(student_list);
+		d1.setStudentArray(student_list);
 		displayMenu();
 		
 	}
