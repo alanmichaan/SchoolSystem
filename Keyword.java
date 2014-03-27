@@ -11,7 +11,7 @@ public class Keyword {
 		//create a treeMap to store the number of instances of a word.
 		TreeMap	<String,Integer> tree_map =	new	TreeMap	<String,Integer>();	
 		
-		File _file = new File("C:\\Users\\iris\\Documents\\2205\\example.txt");
+		File _file = new File("C:\\Users\\Alan\\Documents\\2205\\example.txt");
 		
 		//need try-catch if we can't find the file source
 		try{
